@@ -1,0 +1,13 @@
+{
+  "name": "ecoapex",
+  "version": "1.0.0",
+  "description": "EcoApex Autonomous Eco-Orchestrator",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  }
+}
