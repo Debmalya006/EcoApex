@@ -1,0 +1,8 @@
+node_modules/
+server/data/users.json
+server/data/ledger.json
+.env
+.env.local
+*.log
+dist/
+.DS_Store
