@@ -1,0 +1,229 @@
+{
+  "meta": {
+    "project": "EcoApex",
+    "tagline": "Where predictive AI meets behavioral economics to build the hostels of the future."
+  },
+  "campus": {
+    "roomsTotal": 847,
+    "quotaKwh": 3400,
+    "startTodayKwh": 2847,
+    "startCo2SavedKg": 184,
+    "tickMs": 4000,
+    "tickDeltaKwhMin": 12,
+    "tickDeltaKwhMax": 18
+  },
+  "nudgePolicy": {
+    "cohortName": "Class of 2026",
+    "maxActiveNudges": 5,
+    "overQuotaKwPerRoom": 3.7,
+    "vampireOccupancyThreshold": 0.62,
+    "vampireBaselineThresholdKw": 260
+  },
+  "utilities": [
+    {
+      "label": "Priority Laundry",
+      "cost": 40
+    },
+    {
+      "label": "Extended AC +1h",
+      "cost": 65
+    },
+    {
+      "label": "Cafeteria Voucher",
+      "cost": 30
+    }
+  ],
+  "heatmapPattern": [
+    10,
+    8,
+    6,
+    5,
+    4,
+    4,
+    5,
+    8,
+    12,
+    18,
+    22,
+    25,
+    28,
+    30,
+    29,
+    27,
+    24,
+    20,
+    18,
+    22,
+    25,
+    20,
+    15,
+    12
+  ],
+  "wings": [
+    {
+      "name": "Alpha",
+      "rooms": 124,
+      "initial": {
+        "occupancyPct": 0.76,
+        "loadNowKw": 470,
+        "baselineLoadKw": 278,
+        "tempC": 28.1,
+        "tokens": 98
+      },
+      "devices": [
+        {
+          "type": "lights",
+          "count": 186,
+          "standbyW": 2
+        },
+        {
+          "type": "fans",
+          "count": 162,
+          "standbyW": 1
+        },
+        {
+          "type": "ac_units",
+          "count": 74,
+          "standbyW": 8
+        },
+        {
+          "type": "laptops",
+          "count": 91,
+          "standbyW": 6
+        }
+      ]
+    },
+    {
+      "name": "Beta",
+      "rooms": 110,
+      "initial": {
+        "occupancyPct": 0.69,
+        "loadNowKw": 498,
+        "baselineLoadKw": 286,
+        "tempC": 28.4,
+        "tokens": 84
+      },
+      "devices": [
+        {
+          "type": "lights",
+          "count": 170,
+          "standbyW": 2
+        },
+        {
+          "type": "fans",
+          "count": 146,
+          "standbyW": 1
+        },
+        {
+          "type": "ac_units",
+          "count": 70,
+          "standbyW": 8
+        },
+        {
+          "type": "laptops",
+          "count": 88,
+          "standbyW": 6
+        }
+      ]
+    },
+    {
+      "name": "Gamma",
+      "rooms": 98,
+      "initial": {
+        "occupancyPct": 0.63,
+        "loadNowKw": 525,
+        "baselineLoadKw": 292,
+        "tempC": 29.0,
+        "tokens": 71
+      },
+      "devices": [
+        {
+          "type": "lights",
+          "count": 150,
+          "standbyW": 2
+        },
+        {
+          "type": "fans",
+          "count": 134,
+          "standbyW": 1
+        },
+        {
+          "type": "ac_units",
+          "count": 62,
+          "standbyW": 8
+        },
+        {
+          "type": "laptops",
+          "count": 80,
+          "standbyW": 6
+        }
+      ]
+    },
+    {
+      "name": "Delta",
+      "rooms": 88,
+      "initial": {
+        "occupancyPct": 0.58,
+        "loadNowKw": 510,
+        "baselineLoadKw": 298,
+        "tempC": 29.3,
+        "tokens": 59
+      },
+      "devices": [
+        {
+          "type": "lights",
+          "count": 136,
+          "standbyW": 2
+        },
+        {
+          "type": "fans",
+          "count": 118,
+          "standbyW": 1
+        },
+        {
+          "type": "ac_units",
+          "count": 56,
+          "standbyW": 8
+        },
+        {
+          "type": "laptops",
+          "count": 74,
+          "standbyW": 6
+        }
+      ]
+    },
+    {
+      "name": "Epsilon",
+      "rooms": 127,
+      "initial": {
+        "occupancyPct": 0.61,
+        "loadNowKw": 545,
+        "baselineLoadKw": 312,
+        "tempC": 29.7,
+        "tokens": 38
+      },
+      "devices": [
+        {
+          "type": "lights",
+          "count": 194,
+          "standbyW": 2
+        },
+        {
+          "type": "fans",
+          "count": 172,
+          "standbyW": 1
+        },
+        {
+          "type": "ac_units",
+          "count": 79,
+          "standbyW": 8
+        },
+        {
+          "type": "laptops",
+          "count": 102,
+          "standbyW": 6
+        }
+      ]
+    }
+  ]
+}

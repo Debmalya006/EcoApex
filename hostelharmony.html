@@ -1,0 +1,1483 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoApex - Autonomous Eco-Orchestrator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700&family=Inter:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#060b13;
+  --bg-soft:#0f1928;
+  --panel:rgba(12,20,34,.82);
+  --line:rgba(111,153,199,.24);
+  --text:#eaf5ff;
+  --muted:#93abc4;
+  --green:#49e3a6;
+  --green-soft:rgba(73,227,166,.14);
+  --amber:#ffbf5a;
+  --amber-soft:rgba(255,191,90,.14);
+  --red:#ff6a84;
+  --red-soft:rgba(255,106,132,.14);
+  --blue:#65a7ff;
+  --cyan:#3be5ff;
+  --cyan-soft:rgba(59,229,255,.14);
+  --mono:"JetBrains Mono",monospace;
+  --sans:"Space Grotesk",sans-serif;
+  --radius:16px;
+  --shadow:0 18px 40px rgba(0,0,0,.42);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--text);
+  background:
+    radial-gradient(circle at 8% -10%,rgba(59,229,255,.26),transparent 36%),
+    radial-gradient(circle at 100% 120%,rgba(101,167,255,.2),transparent 35%),
+    var(--bg);
+  min-height:100vh;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(107,153,199,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(107,153,199,.06) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(circle at center,black 35%,transparent 100%);
+}
+.shell{
+  position:relative;
+  z-index:1;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:252px 1fr;
+  grid-template-rows:70px 1fr;
+  transition:grid-template-columns .24s ease;
+}
+.topbar{
+  grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:10px 20px;
+  border-bottom:1px solid var(--line);background:rgba(8,14,24,.74);backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:20
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+  padding:4px 12px 4px 6px;
+  border-radius:14px;
+  border:1px solid rgba(101,167,255,.28);
+  background:linear-gradient(135deg,rgba(25,43,67,.74),rgba(12,25,41,.92));
+  box-shadow:0 10px 24px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.brand-mark{
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  border:1px solid rgba(122,184,241,.5);
+  background:
+    radial-gradient(circle at 28% 25%,rgba(210,247,255,.44),transparent 36%),
+    linear-gradient(150deg,rgba(39,73,118,.9),rgba(16,33,56,.96));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06),
+    0 0 30px rgba(59,229,255,.32),
+    inset 0 1px 0 rgba(255,255,255,.2)
+}
+.brand-mark svg{width:22px;height:22px;display:block;stroke:#d8f8ff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(59,229,255,.5))}
+.brand-word{
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:.028em;
+  line-height:1;
+  color:#e6fbff;
+  text-shadow:0 0 12px rgba(59,229,255,.28),0 0 24px rgba(101,167,255,.2);
+}
+.tag{padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(14,25,40,.55);color:var(--muted);font-size:10px;font-family:var(--mono);letter-spacing:.05em}
+.tag.live{background:var(--green-soft);border-color:rgba(73,227,166,.35);color:var(--green)}
+.topbar-meta{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sidebar-toggle{
+  width:36px;
+  height:36px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(15,27,44,.8);
+  color:var(--text);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:border-color .2s ease,background .2s ease,transform .2s ease,color .2s ease;
+}
+.sidebar-toggle:hover{
+  border-color:rgba(59,229,255,.42);
+  background:rgba(19,35,56,.9);
+}
+.sidebar-toggle:active{transform:translateY(1px)}
+.sidebar-toggle svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transition:transform .24s ease;
+}
+.shell.sidebar-collapsed .sidebar-toggle svg{transform:rotate(180deg)}
+.topbar-time{
+  font-family:var(--mono);
+  color:#cbeeff;
+  font-size:12px;
+  letter-spacing:.05em;
+  padding:5px 9px;
+  border-radius:9px;
+  border:1px solid rgba(101,167,255,.28);
+  background:linear-gradient(135deg,rgba(14,28,46,.82),rgba(9,20,35,.74));
+  text-shadow:0 0 9px rgba(59,229,255,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 12px rgba(59,229,255,.12);
+  animation:clockGlow 3.2s ease-in-out infinite;
+}
+@keyframes clockGlow{
+  0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 10px rgba(59,229,255,.1)}
+  50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 16px rgba(59,229,255,.2)}
+}
+.notif-btn{
+  width:36px;
+  height:36px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(15,27,44,.8);
+  color:var(--text);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  position:relative;
+  font-family:var(--mono);
+}
+.notif-icon{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.notif-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:999px;background:var(--red);color:#fff;font-family:var(--mono);font-size:10px;display:grid;place-items:center;border:2px solid var(--bg)}
+.notif-badge.is-zero{display:none}
+.sidebar{
+  border-right:1px solid var(--line);
+  background:rgba(8,14,24,.82);
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  overflow-y:auto;
+  transition:padding .24s ease,gap .24s ease;
+}
+.sidebar-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.sidebar-label{margin:2px 4px 8px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.sidebar-nav{display:flex;flex-direction:column;gap:6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid transparent;color:var(--muted);cursor:pointer;text-decoration:none;font-size:13px}
+.sidebar-nav .nav-item,
+.sidebar-nav .nav-item *{cursor:pointer}
+.nav-item:hover{background:rgba(101,167,255,.08);border-color:rgba(101,167,255,.28);color:var(--text)}
+.nav-item.active{background:var(--cyan-soft);border-color:rgba(59,229,255,.38);color:var(--cyan);font-weight:600}
+.nav-icon{
+  width:24px;height:24px;border-radius:8px;display:grid;place-items:center;
+  border:1px solid rgba(92,170,239,.3);
+  background:linear-gradient(150deg,rgba(36,70,111,.45),rgba(15,33,56,.72));
+  color:#9ed8ff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  transition:border-color .2s ease,color .2s ease,background .2s ease
+}
+.nav-icon svg{
+  width:14px;height:14px;display:block;
+  stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round
+}
+.nav-icon svg .fill{fill:currentColor;stroke:none}
+.nav-item.active .nav-icon{
+  border-color:rgba(59,229,255,.62);
+  background:linear-gradient(150deg,rgba(40,95,137,.62),rgba(20,51,80,.88));
+  color:var(--cyan)
+}
+.nav-count{margin-left:auto;border-radius:999px;background:var(--amber-soft);color:var(--amber);font-size:10px;font-family:var(--mono);padding:2px 7px}
+.nav-count.is-zero{display:none}
+.shell.sidebar-collapsed .sidebar-nav .nav-count.is-zero{display:none}
+.wing-list{display:flex;flex-direction:column;gap:4px}
+.wing-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer}
+.wing-item:hover{background:rgba(101,167,255,.08)}
+.wing-item.active{background:var(--green-soft);border:1px solid rgba(73,227,166,.32)}
+.wing-dot{width:8px;height:8px;border-radius:999px;flex-shrink:0}
+.wing-name{font-size:12px}
+.wing-rank{margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--muted)}
+.shell.sidebar-collapsed{grid-template-columns:52px 1fr}
+.shell.sidebar-collapsed .sidebar{padding:8px 5px;gap:8px;align-items:center}
+.shell.sidebar-collapsed .sidebar-card{width:100%;padding:6px;border-radius:12px}
+.shell.sidebar-collapsed .sidebar-label,
+.shell.sidebar-collapsed .wing-name,
+.shell.sidebar-collapsed .wing-rank,
+.shell.sidebar-collapsed .sidebar-foot{display:none}
+.shell.sidebar-collapsed .sidebar-nav{align-items:center;gap:6px}
+.shell.sidebar-collapsed .sidebar-nav .nav-item{
+  justify-content:center;
+  width:36px;
+  min-width:36px;
+  height:36px;
+  padding:6px;
+  gap:0;
+  font-size:0;
+}
+.shell.sidebar-collapsed .sidebar-nav .nav-count{display:none}
+.shell.sidebar-collapsed .sidebar-nav .nav-icon{margin:0}
+.shell.sidebar-collapsed .wing-list{align-items:center;gap:6px}
+.shell.sidebar-collapsed .wing-item{
+  justify-content:center;
+  width:32px;
+  min-width:32px;
+  height:28px;
+  padding:4px;
+  gap:0;
+}
+.shell.sidebar-collapsed .wing-dot{width:10px;height:10px}
+.sidebar-foot{
+  margin-top:auto;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#0f1523 0%,#111827 100%);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.4),
+    0 20px 40px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  padding:0;
+  font-family:var(--mono);
+  position:relative;
+}
+.sidebar-foot::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:linear-gradient(90deg,#e8612a 0%,#ff8c42 40%,transparent 100%);
+}
+.amd-panel-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px 12px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.amd-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:linear-gradient(135deg,#c8401a,#e8612a);
+  border-radius:5px;
+  padding:4px 8px;
+  flex-shrink:0;
+}
+.amd-badge svg{
+  width:14px;
+  height:14px;
+  fill:#fff;
+}
+.amd-badge span{
+  font-family:"Syne",var(--sans);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  color:#fff;
+  text-transform:uppercase;
+}
+.amd-header-right{
+  flex:1;
+  min-width:0;
+}
+.amd-runtime-label{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.08em;
+  color:rgba(255,255,255,.9);
+  text-transform:uppercase;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.amd-runtime-sub{
+  font-size:9px;
+  color:rgba(255,255,255,.35);
+  letter-spacing:.05em;
+  margin-top:2px;
+}
+.amd-status-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#22c55e;
+  flex-shrink:0;
+  position:relative;
+  animation:amdPulse 2s ease-in-out infinite;
+}
+.amd-status-dot::after{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:50%;
+  background:rgba(34,197,94,.25);
+  animation:amdPulseRing 2s ease-in-out infinite;
+}
+@keyframes amdPulse{
+  0%,100%{opacity:1}
+  50%{opacity:.7}
+}
+@keyframes amdPulseRing{
+  0%,100%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.4);opacity:0}
+}
+.amd-panel-body{
+  padding:12px 16px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.amd-status-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.amd-status-key{
+  font-size:9.5px;
+  color:rgba(255,255,255,.38);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.amd-status-val{
+  font-size:10px;
+  font-weight:500;
+  color:rgba(255,255,255,.75);
+  text-align:right;
+  letter-spacing:.03em;
+}
+.amd-status-val.online{
+  color:#22c55e;
+  font-weight:600;
+}
+.amd-status-val.highlight{
+  color:#e8612a;
+  font-weight:600;
+}
+.amd-divider{
+  height:1px;
+  background:rgba(255,255,255,.05);
+  margin:2px 0;
+}
+.amd-throughput-row{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.amd-throughput-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.amd-throughput-track{
+  height:3px;
+  background:rgba(255,255,255,.07);
+  border-radius:99px;
+  overflow:hidden;
+}
+.amd-throughput-fill{
+  height:100%;
+  width:72%;
+  background:linear-gradient(90deg,#e8612a,#ff8c42);
+  border-radius:99px;
+  animation:amdBarIn 1.2s cubic-bezier(.4,0,.2,1) forwards;
+  transform-origin:left;
+}
+@keyframes amdBarIn{
+  from{width:0}
+  to{width:72%}
+}
+.amd-chip-row{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  padding-top:2px;
+}
+.amd-chip{
+  font-size:8.5px;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  padding:3px 7px;
+  border-radius:4px;
+  font-weight:600;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);
+  color:rgba(255,255,255,.45);
+}
+.amd-chip.active{
+  background:rgba(232,97,42,.12);
+  border-color:rgba(232,97,42,.3);
+  color:#ff8c42;
+}
+.amd-chip.green{
+  background:rgba(34,197,94,.1);
+  border-color:rgba(34,197,94,.25);
+  color:#22c55e;
+}
+.main{padding:18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;min-width:0}
+.app-page{display:none;flex-direction:column;gap:14px;min-width:0}
+.app-page.active{display:flex}
+.page-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.page-title{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.03em}
+.page-sub{margin:0;color:var(--muted);font-family:var(--mono);font-size:11px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.card,.stat-card,.student-card,.admin-card,.analytics-card,.access-card,.access-panel,.onboard-card,.nudge-toast,.ghost-mascot{
+  position:relative;
+  background:linear-gradient(150deg,rgba(18,31,49,.82),rgba(11,20,34,.86));
+  border:1px solid rgba(111,153,199,.24);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(14px);
+}
+.card::before,.stat-card::before,.student-card::before,.admin-card::before,.analytics-card::before,.access-card::before,.access-panel::before,.onboard-card::before,.nudge-toast::before,.ghost-mascot::before{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:calc(var(--radius) - 1px);
+  pointer-events:none;
+  background:linear-gradient(170deg,rgba(93,170,255,.1),transparent 42%,rgba(59,229,255,.08) 100%);
+}
+.card,.student-card,.admin-card,.analytics-card,.stat-card{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.card:hover,.student-card:hover,.admin-card:hover,.analytics-card:hover,.stat-card:hover{
+  border-color:rgba(59,229,255,.45);
+  transform:translateY(-2px);
+  box-shadow:0 24px 50px rgba(0,0,0,.45),0 0 0 1px rgba(59,229,255,.12) inset;
+}
+.stat-card{padding:14px}
+.stat-label{margin:0 0 10px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.stat-value{margin:0;font-size:30px;line-height:1;font-weight:700;letter-spacing:-.04em}
+.stat-unit{font-family:var(--mono);font-size:12px;color:#9fb7d4}
+.stat-delta{margin-top:9px;font-family:var(--mono);font-size:10px}
+.stat-delta.up{color:#ff8fa7}
+.stat-delta.down{color:#7df2bf}
+.grid-2{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:10px;align-items:stretch}
+.bottom-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch;grid-auto-rows:1fr}
+.bottom-grid > .card{display:flex;flex-direction:column;min-height:100%}
+.bottom-grid > .heatmap-card{grid-column:1/-1}
+.bottom-grid > .card .card-header{min-height:66px}
+.bottom-grid > .card .card-body,
+.bottom-grid > .card .predict-wrap{flex:1}
+.page-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.analytics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.card-header{padding:13px;border-bottom:1px solid rgba(111,153,199,.22);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card-title{margin:0;font-size:15px;font-weight:600;letter-spacing:.01em}
+.card-subtitle{margin-top:4px;font-family:var(--mono);font-size:10px;color:#89a7c7;letter-spacing:.06em;text-transform:uppercase}
+.card-body{padding:13px}
+.card-badge{border-radius:999px;padding:5px 11px;font-family:var(--mono);font-size:10px;border:1px solid transparent}
+.card-badge.green{background:rgba(73,227,166,.16);border-color:rgba(73,227,166,.42);color:var(--green)}
+.card-badge.amber{background:rgba(255,191,90,.18);border-color:rgba(255,191,90,.4);color:var(--amber)}
+.card-badge.red{background:rgba(255,106,132,.18);border-color:rgba(255,106,132,.44);color:#ff88a2}
+.forecast-card #predict-badge{
+  background:rgba(125,32,68,.32);
+  border-color:rgba(255,116,160,.56);
+  color:#ff7da8;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-size:11px
+}
+.card-badge.red.pulsing{
+  animation:badgePulse 1.4s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,106,132,.5)}
+  50%{box-shadow:0 0 0 6px rgba(255,106,132,0)}
+}
+.tabs{display:flex;gap:6px}
+.tab{border:1px solid rgba(111,153,199,.3);border-radius:999px;padding:4px 10px;font-family:var(--mono);font-size:10px;color:#9ab4d1;cursor:pointer;background:rgba(12,22,36,.68)}
+.tab.active{background:rgba(59,229,255,.18);border-color:rgba(59,229,255,.45);color:var(--cyan)}
+.chart-area{
+  height:210px;
+  border-radius:12px;
+  border:1px solid rgba(111,153,199,.24);
+  background:
+    radial-gradient(circle at 8% -25%,rgba(59,229,255,.16),transparent 45%),
+    linear-gradient(180deg,rgba(59,229,255,.1),rgba(59,229,255,.02)),
+    repeating-linear-gradient(0deg,rgba(159,193,229,.14) 0 1px,transparent 1px 30px),
+    rgba(9,17,29,.96);
+  overflow:hidden;
+}
+.chart-area svg{width:100%;height:100%;display:block}
+.chart-line{vector-effect:non-scaling-stroke}
+.chart-line.actual{
+  filter:drop-shadow(0 0 9px rgba(59,229,255,.45));
+}
+.chart-line.pred{
+  filter:drop-shadow(0 0 8px rgba(101,167,255,.4));
+  animation:chartPredDash 4.2s linear infinite;
+}
+.chart-line.quota{
+  animation:chartQuotaDash 7s linear infinite;
+}
+@keyframes chartPredDash{
+  from{stroke-dashoffset:0}
+  to{stroke-dashoffset:-24}
+}
+@keyframes chartQuotaDash{
+  from{stroke-dashoffset:0}
+  to{stroke-dashoffset:-14}
+}
+.chart-legend{margin-top:10px;display:flex;gap:12px;font-family:var(--mono);font-size:10px;color:#96b0cd}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.legend-dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+.legend-dot.actual{background:var(--cyan);box-shadow:0 0 10px rgba(59,229,255,.45)}
+.legend-dot.pred{background:var(--blue);box-shadow:0 0 10px rgba(101,167,255,.45)}
+.legend-dot.quota{background:var(--amber)}
+.overview-chart-card .card-body{padding:12px 12px 11px}
+.nudges-priority-card{
+  border-color:rgba(255,124,146,.34);
+  box-shadow:0 20px 46px rgba(0,0,0,.46),0 0 0 1px rgba(255,106,132,.1) inset;
+}
+.nudges-priority-card .card-header{
+  padding:14px 15px;
+  background:linear-gradient(140deg,rgba(92,24,39,.34),rgba(16,25,40,.5));
+}
+.nudges-priority-card .card-title{font-size:17px;letter-spacing:.015em}
+.nudges-priority-card .card-subtitle{font-size:10px;color:#ffb2c1}
+.nudges-priority-card .card-badge{
+  font-size:11px;
+  padding:6px 12px;
+  box-shadow:0 0 14px rgba(255,106,132,.26);
+}
+.nudge-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:290px;
+  max-height:390px;
+  overflow:auto;
+  padding-right:4px
+}
+.nudge-list::-webkit-scrollbar{width:8px}
+.nudge-list::-webkit-scrollbar-thumb{background:rgba(105,147,191,.38);border-radius:999px}
+.nudge{
+  border:1px solid rgba(111,153,199,.24);
+  border-radius:14px;
+  background:rgba(11,21,34,.9);
+  padding:12px;
+  display:flex;
+  gap:10px;
+  cursor:pointer;
+  transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease
+}
+.nudge:hover{transform:translateY(-1px);border-color:rgba(59,229,255,.45)}
+.nudge.urgent{border-color:rgba(255,106,132,.5);background:rgba(76,18,32,.4)}
+.nudge.warn{border-color:rgba(255,191,90,.42);background:rgba(72,49,16,.36)}
+.nudge.ok{border-color:rgba(73,227,166,.42);background:rgba(12,61,43,.36)}
+.nudge-icon{width:26px;height:26px;border-radius:999px;border:1px solid rgba(111,153,199,.34);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:#a6bdd8;background:rgba(12,23,38,.95);flex-shrink:0}
+.nudge-content{flex:1;min-width:0}
+.nudge-wing{font-family:var(--mono);font-size:10px;color:#95b0cc;text-transform:uppercase;letter-spacing:.06em}
+.nudge-msg{margin-top:4px;font-size:13px;line-height:1.48}
+.nudge-action{margin-top:7px;font-family:var(--mono);font-size:10px;color:var(--green)}
+.nudge-pct{margin-left:auto;font-size:20px;font-weight:700;line-height:1;align-self:flex-start;padding-top:2px;min-width:48px;text-align:right}
+.nudge-empty{
+  border:1px dashed rgba(111,153,199,.34);
+  border-radius:14px;
+  background:rgba(9,18,31,.68);
+  min-height:138px;
+  padding:16px;
+  display:grid;
+  align-content:center;
+  gap:7px;
+  text-align:center
+}
+.nudge-empty-head{font-size:14px;font-weight:600;color:#d7ebff}
+.nudge-empty-sub{font-family:var(--mono);font-size:10px;line-height:1.5;color:var(--muted)}
+.board-item{border:1px solid rgba(111,153,199,.24);border-radius:12px;background:rgba(10,20,33,.84);padding:10px;display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.rank-num{width:28px;text-align:center;font-size:22px;font-weight:700;color:#89a7c7}
+.board-info{flex:1;min-width:0}
+.board-wing{font-size:14px;font-weight:600}
+.board-score{margin-top:2px;font-family:var(--mono);font-size:10px;color:#94b0cc}
+.board-reward{margin-top:6px;display:inline-block;border-radius:999px;border:1px solid rgba(73,227,166,.42);background:rgba(73,227,166,.18);color:var(--green);font-family:var(--mono);font-size:9px;padding:3px 8px}
+.board-bar-wrap{width:90px}
+.board-kwh{text-align:right;font-family:var(--mono);font-size:10px;color:#92b0ce}
+.board-bar-bg{margin-top:4px;height:6px;border-radius:999px;background:rgba(111,153,199,.2);overflow:hidden}
+.board-bar{height:100%;border-radius:999px}
+.forecast-card,.heatmap-card{
+  background:linear-gradient(108deg,rgba(13,29,50,.97),rgba(8,19,35,.95) 50%,rgba(16,36,60,.94));
+  border:1px solid rgba(47,146,201,.36);
+  box-shadow:0 0 0 1px rgba(24,118,183,.16) inset,0 24px 46px rgba(0,0,0,.46)
+}
+.forecast-card .card-header,.heatmap-card .card-header{border-bottom:1px solid rgba(94,142,188,.24)}
+.predict-wrap{padding:14px}
+.predict-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.predict-progress-value{font-weight:600}
+.predict-track{height:12px;border-radius:999px;background:rgba(81,128,172,.2);margin:26px 0 10px;position:relative;overflow:visible}
+.predict-fill{height:100%;border-radius:999px;transition:width .7s ease}
+.predict-fill.safe{background:linear-gradient(90deg,#3ee3a8,#93d244)}
+.predict-fill.warn{background:linear-gradient(90deg,#38d89e,#d8b940)}
+.predict-fill.over{background:linear-gradient(90deg,#42e0ad,#c9b13b,#f17b8e)}
+.predict-quota-line{position:absolute;top:-4px;bottom:-4px;width:2px;background:rgba(92,211,255,.86)}
+.predict-quota-label{
+  position:absolute;
+  top:-26px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:var(--mono);
+  font-size:9px;
+  line-height:1;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  color:#66e2ff;
+  border:1px solid rgba(59,229,255,.42);
+  border-radius:7px;
+  background:rgba(3,15,26,.92);
+  padding:4px 7px
+}
+.predict-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:#8fadcb}
+.predict-hourly{margin-top:14px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;max-width:360px}
+.predict-hour-col{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.predict-hour-bar-wrap{
+  width:100%;
+  height:52px;
+  background:transparent;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  padding:0
+}
+.predict-hour-bar{width:20px;min-height:5px;border-radius:4px 4px 0 0;transition:height .35s ease}
+.predict-hour-label{font-family:var(--mono);font-size:11px;color:#89a9cb;letter-spacing:.02em}
+.predict-hour-number{font-family:var(--mono);font-size:10px;color:#9cb7d4}
+.predict-hour-chip{border:1px solid rgba(111,153,199,.24);border-radius:8px;background:rgba(10,20,33,.84);padding:6px;text-align:center}
+.predict-hour-chip.high{border-color:rgba(255,106,132,.42)}
+.predict-hour-chip.mid{border-color:rgba(255,191,90,.4)}
+.predict-hour-chip.low{border-color:rgba(73,227,166,.4)}
+.predict-hour-time{font-family:var(--mono);font-size:9px;color:#91acca}
+.predict-hour-val{margin-top:3px;font-family:var(--mono);font-size:10px;color:#d9ecff}
+.predict-drivers{margin-top:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.predict-driver{border:1px solid rgba(111,153,199,.24);border-radius:10px;background:rgba(8,18,30,.86);padding:8px}
+.predict-driver-lbl{font-family:var(--mono);font-size:9px;color:#8daacc;text-transform:uppercase;letter-spacing:.05em}
+.predict-driver-val{margin-top:4px;font-size:12px;font-weight:600}
+.predict-risk{margin-top:10px;padding:8px 10px;border:1px solid rgba(111,153,199,.24);border-radius:10px;font-size:12px;line-height:1.45}
+.predict-risk.safe{background:rgba(12,61,43,.28);border-color:rgba(73,227,166,.4);color:#a4efcf}
+.predict-risk.warn{background:rgba(72,49,16,.3);border-color:rgba(255,191,90,.42);color:#ffdba3}
+.predict-risk.over{background:rgba(76,18,32,.32);border-color:rgba(255,106,132,.44);color:#ffb4c3}
+.predict-meta{margin-top:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.predict-meta-item{border:1px solid rgba(58,138,194,.34);border-radius:12px;background:rgba(5,17,31,.9);padding:10px;text-align:center}
+.predict-meta-val{font-size:38px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.predict-meta-lbl{margin-top:5px;font-family:var(--mono);font-size:10px;color:#8eabca;text-transform:uppercase;letter-spacing:.06em}
+.heatmap-card{justify-self:stretch}
+.heatmap-card .card-body{padding:12px}
+.heatmap-widget{
+  background:linear-gradient(145deg,rgba(10,22,42,.95),rgba(5,13,28,.98));
+  border:1px solid rgba(100,160,220,.16);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(59,229,255,.06) inset,0 24px 54px rgba(0,0,0,.46),0 0 24px rgba(59,229,255,.08);
+}
+.heatmap-widget-head{
+  padding:16px 16px 12px;
+  border-bottom:1px solid rgba(100,160,220,.16);
+  background:linear-gradient(90deg,rgba(59,229,255,.05),transparent);
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.heatmap-head-icon{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  background:conic-gradient(from 200deg,var(--cyan),var(--green),var(--blue),var(--cyan));
+  display:grid;
+  place-items:center;
+  color:#04131e;
+  box-shadow:0 0 18px rgba(59,229,255,.28);
+  flex-shrink:0;
+}
+.heatmap-head-text{flex:1;min-width:0}
+.heatmap-title{
+  font-size:17px;
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:-.02em;
+}
+.heatmap-sub{
+  margin-top:4px;
+  font-family:var(--mono);
+  font-size:9px;
+  color:#8aa8c8;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.heatmap-meta{text-align:right;flex-shrink:0}
+.heatmap-active-wing{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--cyan);
+  font-weight:600;
+}
+.heatmap-now{
+  margin-top:4px;
+  font-family:var(--mono);
+  font-size:10px;
+  color:#9ab6d4;
+}
+.heatmap-peak{
+  margin-top:2px;
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--amber);
+}
+.heatmap-wing-tabs{
+  display:flex;
+  gap:6px;
+  padding:10px 14px 0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.heatmap-wing-tabs::-webkit-scrollbar{display:none}
+.heatmap-wing-tab{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(100,160,220,.22);
+  background:rgba(10,22,40,.6);
+  color:#83a8cd;
+  font-family:var(--mono);
+  font-size:10px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s ease;
+}
+.heatmap-wing-tab:hover{border-color:rgba(59,229,255,.4);color:#dff0ff}
+.heatmap-wing-tab.active{background:rgba(59,229,255,.14);border-color:rgba(59,229,255,.45);color:var(--cyan)}
+.heatmap-wing-tab-dot{width:7px;height:7px;border-radius:999px;flex-shrink:0}
+.heatmap-table{display:flex;flex-direction:column;gap:5px;padding:14px 14px 8px}
+.heatmap-row{display:flex;align-items:center;gap:8px}
+.heatmap-row-label{
+  width:52px;
+  flex-shrink:0;
+  font-family:var(--mono);
+  font-size:9px;
+  color:#7ea2c6;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  text-align:right;
+  line-height:1;
+}
+.heatmap-row-cells{flex:1;display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:2.5px}
+.heatmap-cell{
+  height:22px;
+  border-radius:4px;
+  cursor:pointer;
+  position:relative;
+  transition:transform .15s ease,filter .15s ease,box-shadow .15s ease,opacity .2s ease;
+}
+.heatmap-cell:hover{transform:scaleY(1.2) scaleX(1.08);filter:brightness(1.32);z-index:10}
+.heatmap-cell.future{opacity:.42;border:1px dashed rgba(255,255,255,.14)}
+.heatmap-cell.peak-glow{animation:heatPeakPulse 2.4s ease-in-out infinite}
+@keyframes heatPeakPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.42) saturate(1.25)}}
+.heatmap-time-axis{display:flex;align-items:center;gap:8px;padding:0 14px 10px}
+.heatmap-time-spacer{width:52px;flex-shrink:0}
+.heatmap-time-labels{
+  flex:1;
+  display:flex;
+  justify-content:space-between;
+  font-family:var(--mono);
+  font-size:9px;
+  color:#7e9fc3;
+}
+.heatmap-scale{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-top:1px solid rgba(100,160,220,.16);
+}
+.heatmap-scale-label{
+  font-family:var(--mono);
+  font-size:9px;
+  color:#7fa2c5;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  flex-shrink:0;
+}
+.heatmap-scale-grad{
+  flex:1;
+  height:10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#1a3a6e,#1a6e5a,#2aad6a,#7de875,#ffd633,#ff9933,#ff5577);
+  box-shadow:0 0 12px rgba(59,229,255,.2);
+}
+.heatmap-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px;
+  border-top:1px solid rgba(100,160,220,.16);
+  background:rgba(100,160,220,.16);
+}
+.heatmap-stat{
+  background:rgba(5,13,27,.96);
+  padding:11px 12px;
+  text-align:center;
+}
+.heatmap-stat-value{
+  font-size:21px;
+  font-weight:700;
+  letter-spacing:-.03em;
+  line-height:1;
+}
+.heatmap-stat-label{
+  margin-top:4px;
+  font-family:var(--mono);
+  font-size:9px;
+  color:#7e9fc3;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.heatmap-live{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-top:1px solid rgba(100,160,220,.16);
+  background:rgba(59,229,255,.03);
+}
+.heatmap-live-dot{
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:blink 1.4s ease-in-out infinite;
+}
+.heatmap-live-text{
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--green);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.heatmap-live-clock{
+  margin-left:auto;
+  font-family:var(--mono);
+  font-size:9px;
+  color:#7f9fc3;
+}
+.heatmap-tooltip{
+  position:fixed;
+  pointer-events:none;
+  background:rgba(5,14,28,.96);
+  border:1px solid rgba(59,229,255,.4);
+  border-radius:10px;
+  padding:8px 10px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:#dff0ff;
+  z-index:120;
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity .15s ease;
+  box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 1px rgba(59,229,255,.08) inset;
+  line-height:1.5;
+}
+.heatmap-tooltip-wing{color:var(--cyan);font-weight:600;font-size:10px}
+.heatmap-tooltip-val{font-size:16px;font-weight:700}
+.heatmap-tooltip-unit{font-size:10px;color:#89a8c7}
+.heatmap-tooltip-time{color:var(--amber);font-size:9px}
+.analytics-card{padding:12px}
+.analytics-label{margin:0;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.analytics-value{margin-top:8px;font-size:28px;font-weight:700;line-height:1}
+.analytics-detail{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.45}
+.student-card{
+  padding:14px;
+  display:grid;
+  grid-template-columns:minmax(220px,260px) minmax(0,1fr);
+  grid-template-areas:
+    "aura kpi"
+    "market market";
+  gap:12px;
+  align-items:stretch;
+  min-height:420px;
+}
+.aura-wrap{
+  grid-area:aura;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  border-right:1px dashed rgba(111,153,199,.32);
+  padding:8px 12px 8px 2px;
+}
+.aura-orb{
+  width:96px;
+  height:96px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 28% 24%,rgba(255,255,255,.95),rgba(132,252,219,.75) 27%,rgba(41,183,223,.62) 44%,rgba(16,58,104,.94) 100%);
+  box-shadow:
+    inset 0 -12px 28px rgba(0,0,0,.28),
+    0 0 25px rgba(59,229,255,.35),
+    0 12px 30px rgba(0,0,0,.35);
+  transform-origin:center center;
+  animation:auraBreathe 5.8s ease-in-out infinite;
+}
+.aura-label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.student-kpi{
+  grid-area:kpi;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  align-content:start;
+}
+.student-kpi-box,.student-market{
+  border:1px solid rgba(111,153,199,.24);
+  border-radius:12px;
+  background:rgba(9,18,30,.9);
+  padding:12px;
+}
+.student-kpi-title{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.student-kpi-value{margin-top:6px;font-size:24px;font-weight:700;line-height:1}
+.student-market{
+  grid-area:market;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.student-market h5{margin:0;font-size:15px}
+.student-market-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:10px;
+}
+.student-market-list .student-spend-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  min-height:42px;
+  padding:10px 12px !important;
+  font-size:12px !important;
+}
+.admin-card{padding:12px}
+.admin-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.admin-title{margin:0;font-size:18px}
+.admin-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.admin-legend-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.admin-legend-dot{width:8px;height:8px;border-radius:999px;box-shadow:0 0 10px currentColor}
+.admin-legend-dot.online{color:var(--green);background:var(--green)}
+.admin-legend-dot.warn{color:var(--amber);background:var(--amber)}
+.admin-legend-dot.offline{color:var(--red);background:var(--red)}
+.admin-heat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px}
+.admin-cell{
+  min-height:128px;
+  border-radius:12px;
+  border:1px solid rgba(111,153,199,.3);
+  background:rgba(7,15,26,.86);
+  text-align:left;
+  font-family:var(--mono);
+  font-size:10px;
+  color:#eef9ff;
+  padding:10px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.admin-cell.online{border-color:rgba(73,227,166,.42);box-shadow:inset 0 0 0 1px rgba(73,227,166,.12),0 0 16px rgba(73,227,166,.12)}
+.admin-cell.warn{border-color:rgba(255,191,90,.46);box-shadow:inset 0 0 0 1px rgba(255,191,90,.12),0 0 16px rgba(255,191,90,.14)}
+.admin-cell.offline{border-color:rgba(255,106,132,.5);box-shadow:inset 0 0 0 1px rgba(255,106,132,.16),0 0 16px rgba(255,106,132,.18)}
+.admin-node-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.admin-node-title{font-size:12px;font-weight:700;color:#eaf6ff}
+.admin-node-sub{margin-top:2px;color:#8fb0ce}
+.admin-node-pill{border-radius:999px;padding:3px 8px;font-size:9px;letter-spacing:.05em;border:1px solid transparent}
+.admin-node-pill.online{background:rgba(73,227,166,.16);border-color:rgba(73,227,166,.42);color:var(--green)}
+.admin-node-pill.warn{background:rgba(255,191,90,.18);border-color:rgba(255,191,90,.42);color:var(--amber)}
+.admin-node-pill.offline{background:rgba(255,106,132,.18);border-color:rgba(255,106,132,.42);color:#ff88a2}
+.admin-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.admin-metric{border:1px solid rgba(111,153,199,.24);border-radius:8px;background:rgba(10,19,32,.85);padding:6px}
+.admin-metric-lbl{color:#8daccc;font-size:9px}
+.admin-metric-val{margin-top:2px;font-size:12px;font-weight:600}
+.admin-health-track{height:7px;border-radius:999px;background:rgba(111,153,199,.24);overflow:hidden}
+.admin-health-fill{height:100%;border-radius:999px}
+.admin-logic{margin:6px 0 10px;font-family:var(--mono);font-size:10px;color:#f2ba68;line-height:1.5}
+.global-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.glass-layer{backdrop-filter:blur(16px) saturate(130%)}
+.access-portal,.onboard-modal{position:fixed;inset:0;background:rgba(4,9,16,.76);display:grid;place-items:center;padding:14px;z-index:100}
+.access-portal{backdrop-filter:blur(6px)}
+body.auth-mode .shell{display:none}
+body.auth-mode .access-portal{
+  background:
+    radial-gradient(circle at 18% 10%,rgba(59,229,255,.14),transparent 34%),
+    radial-gradient(circle at 84% 88%,rgba(101,167,255,.16),transparent 33%),
+    linear-gradient(180deg,#081525 0%,#050d18 100%);
+  backdrop-filter:none
+}
+.onboard-modal{display:none;z-index:110}
+.access-card,.onboard-card{width:min(920px,100%);padding:14px}
+.access-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.access-title{margin:0;font-size:24px}
+.access-sub,.portal-status,.access-note,.onboard-sub{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.access-role-toggle{display:flex;gap:6px;background:rgba(10,20,33,.85);border:1px solid rgba(111,153,199,.3);border-radius:999px;padding:4px}
+.access-role-btn{border:1px solid transparent;border-radius:999px;background:transparent;padding:7px 12px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer}
+.access-role-btn.active{background:rgba(59,229,255,.18);border-color:rgba(59,229,255,.42);color:var(--cyan)}
+.access-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.access-panel{padding:12px}
+.access-panel h4{margin:0 0 8px;font-size:16px}
+.access-row{margin-top:8px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.access-input,.access-select{
+  width:100%;
+  border-radius:10px;
+  border:1px solid rgba(111,153,199,.3);
+  background:rgba(7,16,28,.92);
+  color:var(--text);
+  padding:10px 11px;
+  font-size:12px;
+  font-family:var(--mono);
+  outline:none;
+}
+.access-input:focus,.access-select:focus{border-color:rgba(59,229,255,.56);box-shadow:0 0 0 3px rgba(59,229,255,.16)}
+.access-btn,.toast-btn{
+  border-radius:10px;
+  border:1px solid rgba(59,229,255,.42);
+  background:linear-gradient(135deg,rgba(24,112,197,.74),rgba(34,188,197,.74));
+  color:#eaffff;
+  font-family:var(--mono);
+  font-size:11px;
+  padding:9px 12px;
+  cursor:pointer;
+  font-weight:600;
+}
+.access-btn.secondary,.toast-btn.secondary{border-color:rgba(111,153,199,.3);background:rgba(10,20,33,.75);color:var(--muted);font-weight:500}
+.onboard-title{margin:0;font-size:22px}
+.onboard-q{margin-top:10px;padding:10px;border:1px solid rgba(111,153,199,.24);border-radius:12px;background:rgba(8,17,29,.85)}
+.onboard-q label{display:block;margin-bottom:8px;font-size:13px}
+.ghost-mascot{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  width:min(290px,calc(100vw - 32px));
+  padding:10px;
+  display:none;
+  z-index:90;
+  transition:right .22s ease,bottom .22s ease,transform .22s ease;
+}
+.ghost-head{margin:0 0 4px;color:var(--cyan);font-family:var(--mono);font-size:10px;letter-spacing:.06em}
+.ghost-msg{margin:0;font-size:12px;line-height:1.45}
+.nudge-toast{position:fixed;right:16px;bottom:16px;width:min(350px,calc(100vw - 32px));padding:12px;z-index:95}
+.close-toast{float:right;border:0;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--mono)}
+.toast-head{margin:0 0 8px;font-family:var(--mono);font-size:10px;color:#f2be70;text-transform:uppercase;letter-spacing:.07em}
+.toast-msg{margin:0;font-size:12px;line-height:1.5}
+.toast-actions{margin-top:10px;display:flex;gap:8px}
+.toast-btn.primary{box-shadow:0 8px 20px rgba(56,180,210,.34)}
+.toast-btn:hover,.access-btn:hover{filter:brightness(1.08)}
+.portal-status{margin-top:12px}
+@keyframes auraBreathe{
+  0%{transform:translateY(0) scale(1);filter:saturate(96%) brightness(.96)}
+  40%{transform:translateY(-2px) scale(1.03);filter:saturate(116%) brightness(1.06)}
+  60%{transform:translateY(-1px) scale(1.038);filter:saturate(122%) brightness(1.09)}
+  100%{transform:translateY(0) scale(1);filter:saturate(96%) brightness(.96)}
+}
+.mid-grid >*,.bottom-grid >*,.page-grid >*,.analytics-grid >*,.student-card >*{min-width:0}
+@media (max-width:1280px){
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-2{grid-template-columns:1fr}
+  .nudges-priority-card{order:-1}
+  .nudge-list{min-height:250px;max-height:340px}
+  .bottom-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bottom-grid > .heatmap-card{grid-column:1/-1}
+  .analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:980px){
+  .shell{grid-template-columns:1fr;grid-template-rows:70px auto 1fr}
+  .shell.sidebar-collapsed{grid-template-columns:1fr;grid-template-rows:70px auto 1fr}
+  .topbar{padding:10px 12px;overflow-x:auto;gap:8px}
+  .sidebar-toggle{display:none}
+  .brand{padding:4px 9px 4px 5px}
+  .brand-word{font-size:21px}
+  .brand-mark{width:36px;height:36px}
+  .sidebar{border-right:0;border-bottom:1px solid var(--line);padding:10px;gap:8px}
+  .sidebar-label,.wing-list,.sidebar-foot{display:none}
+  .sidebar-nav{flex-direction:row;overflow-x:auto;gap:8px}
+  .sidebar-nav .nav-item{white-space:nowrap;flex-shrink:0}
+  .shell.sidebar-collapsed .sidebar{align-items:stretch;padding:10px;gap:8px}
+  .shell.sidebar-collapsed .sidebar-card{padding:10px}
+  .shell.sidebar-collapsed .sidebar-nav{flex-direction:row;overflow-x:auto;gap:8px;align-items:stretch}
+  .shell.sidebar-collapsed .sidebar-nav .nav-item{font-size:13px;gap:8px;padding:8px 10px;width:auto;min-width:0;height:auto}
+  .shell.sidebar-collapsed .sidebar-nav .nav-count:not(.is-zero){display:inline-block}
+  .main{padding:12px}
+  .stat-grid,.bottom-grid,.page-grid,.analytics-grid,.predict-meta,.predict-drivers,.access-grid,.student-card{grid-template-columns:1fr}
+  .student-card{grid-template-areas:"aura" "kpi" "market";min-height:0}
+  .student-kpi{grid-template-columns:1fr}
+  .predict-hourly{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .bottom-grid > .card:last-child{grid-column:auto}
+  .aura-wrap{border-right:0;border-bottom:1px dashed rgba(111,153,199,.32);padding-right:0;padding-bottom:8px}
+}
+</style>
+</head>
+<body class="auth-mode">
+<div class="shell">
+  <header class="topbar">
+    <div class="logo-container" style="display: flex; align-items: center; gap: 12px;">
+      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 5L90 27.5V72.5L50 95L10 72.5V27.5L50 5Z" stroke="#00FF88" stroke-width="2" fill="rgba(0, 255, 136, 0.05)"/>
+        <path d="M50 25C50 25 30 45 30 65C30 76.0457 38.9543 85 50 85C61.0457 85 70 76.0457 70 65C70 45 50 25 50 25Z" fill="url(#leafGradient)"/>
+        <path d="M50 85V40" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M50 65L65 55" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M50 55L35 45" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="50" cy="35" r="3" fill="#00FF88">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <defs>
+          <linearGradient id="leafGradient" x1="50" y1="25" x2="50" y2="85" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00FF88"/>
+            <stop offset="1" stop-color="#008855"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span style="font-family: 'Inter', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: 2px; color: white;">
+        ECO<span style="color: #00FF88;">APEX</span>
+      </span>
+    </div>
+    <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M15 6 9 12l6 6"></path>
+      </svg>
+    </button>
+    <span class="tag">Predictive Digital Twin</span>
+    <span class="tag" id="inference-mode-tag">TFT Edge Inference | v0.1</span>
+    <div class="topbar-meta">
+      <span class="tag live">LIVE | 5 wings | 847 rooms</span>
+      <div class="topbar-time" id="clock">--:--:--</div>
+      <button class="notif-btn" onclick="showToast()" aria-label="Open notifications">
+        <svg class="notif-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M15 18H9"></path>
+          <path d="M18 16V11a6 6 0 0 0-12 0v5l-2 2h16z"></path>
+          <path d="M10.5 6.2A2.1 2.1 0 0 1 12 5.5c.6 0 1.1.3 1.5.7"></path>
+        </svg>
+        <span class="notif-badge is-zero" id="notif-nudge-count">0</span>
+      </button>
+    </div>
+  </header>
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-label">Navigation</div>
+      <div class="sidebar-nav">
+        <a class="nav-item active" data-page="energy-overview">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path class="fill" d="M13.4 2.4 5.6 13h5l-1.2 8.6L18.4 11h-5z"></path>
+            </svg>
+          </span>
+          Energy Overview
+        </a>
+        <a class="nav-item" data-page="student-app">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <circle cx="12" cy="8" r="3.2"></circle>
+              <path d="M5.5 19a6.5 6.5 0 0 1 13 0"></path>
+            </svg>
+          </span>
+          Student App
+        </a>
+        <a class="nav-item" data-page="admin-command-center">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 2.8 5 6v5.2c0 5.2 3.6 8.3 7 10 3.4-1.7 7-4.8 7-10V6z"></path>
+              <path d="m9.2 12.2 2 2 3.9-3.9"></path>
+            </svg>
+          </span>
+          Admin Command Center
+        </a>
+        <a class="nav-item" data-page="marketplace">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <ellipse cx="12" cy="6.3" rx="5.1" ry="2.2"></ellipse>
+              <path d="M6.9 6.3v4c0 1.2 2.3 2.2 5.1 2.2s5.1-1 5.1-2.2v-4"></path>
+              <path d="M6.9 10.3v4c0 1.2 2.3 2.2 5.1 2.2s5.1-1 5.1-2.2v-4"></path>
+            </svg>
+          </span>
+          Marketplace <span class="nav-count is-zero" id="sidebar-nudge-count">0</span>
+        </a>
+        <a class="nav-item" data-page="analytics">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4.5 18.5h15"></path>
+              <path d="m6.8 15 4-4 2.8 2.2 4.6-5.6"></path>
+              <circle cx="6.8" cy="15" r=".8" class="fill"></circle>
+              <circle cx="10.8" cy="11" r=".8" class="fill"></circle>
+              <circle cx="13.6" cy="13.2" r=".8" class="fill"></circle>
+              <circle cx="18.2" cy="7.6" r=".8" class="fill"></circle>
+            </svg>
+          </span>
+          Analytics
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-label">Hostel Wings</div>
+      <div class="wing-list">
+        <div class="wing-item active"><div class="wing-dot" style="background:#0d9b6f"></div><span class="wing-name">Alpha Wing</span><span class="wing-rank">#1</span></div>
+        <div class="wing-item"><div class="wing-dot" style="background:#2f78b5"></div><span class="wing-name">Beta Wing</span><span class="wing-rank">#2</span></div>
+        <div class="wing-item"><div class="wing-dot" style="background:#bc7d1f"></div><span class="wing-name">Gamma Wing</span><span class="wing-rank">#3</span></div>
+        <div class="wing-item"><div class="wing-dot" style="background:#8b99a8"></div><span class="wing-name">Delta Wing</span><span class="wing-rank">#4</span></div>
+        <div class="wing-item"><div class="wing-dot" style="background:#b74545"></div><span class="wing-name">Epsilon Wing</span><span class="wing-rank">#5</span></div>
+      </div>
+    </div>
+    <div class="sidebar-foot">
+      <div class="amd-panel-header">
+        <div class="amd-badge" aria-label="AMD">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <path d="M0 0v24h24V0H0zm13.18 19.256L12 16.8H7.2l-1.162 2.456H3.6L9.6 4.8h4.8l5.932 14.456h-7.152zm-.72-4.856l-1.98-5.078-1.98 5.078h3.96z"></path>
+          </svg>
+          <span>AMD</span>
+        </div>
+        <div class="amd-header-right">
+          <div class="amd-runtime-label">ROCm Edge Runtime</div>
+          <div class="amd-runtime-sub">tft-proxy-v0.1 · edge-node-07</div>
+        </div>
+        <div class="amd-status-dot" aria-hidden="true"></div>
+      </div>
+      <div class="amd-panel-body">
+        <div class="amd-status-row">
+          <span class="amd-status-key">Mode</span>
+          <span class="amd-status-val online">Edge Active</span>
+        </div>
+        <div class="amd-status-row">
+          <span class="amd-status-key">Inference</span>
+          <span class="amd-status-val online">Online</span>
+        </div>
+        <div class="amd-status-row">
+          <span class="amd-status-key">Target Stream</span>
+          <span class="amd-status-val highlight">10k pts/sec</span>
+        </div>
+        <div class="amd-divider"></div>
+        <div class="amd-throughput-row">
+          <div class="amd-throughput-header">
+            <span class="amd-status-key">Throughput</span>
+            <span class="amd-status-val">7.2k / 10k</span>
+          </div>
+          <div class="amd-throughput-track">
+            <div class="amd-throughput-fill"></div>
+          </div>
+        </div>
+        <div class="amd-chip-row">
+          <span class="amd-chip active">Decentralized</span>
+          <span class="amd-chip green">Streaming</span>
+          <span class="amd-chip">GPU-0</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <section class="app-page active" data-page-content="energy-overview">
+      <div class="page-head"><h1 class="page-title">Energy Overview</h1><p class="page-sub">Today | Feb 24, 2026 | Digital twin + behavior nudges</p></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total kWh Today</div><p class="stat-value"><span id="stat-total-kwh">2,847</span><span class="stat-unit"> kWh</span></p><div class="stat-delta down" id="stat-total-delta">down 12% vs yesterday</div></div>
+        <div class="stat-card"><div class="stat-label">CO2 Saved Today</div><p class="stat-value"><span id="stat-co2">184</span><span class="stat-unit"> kg</span></p><div class="stat-delta up" id="stat-co2-delta">up 8% above target</div></div>
+        <div class="stat-card"><div class="stat-label">Active Rooms</div><p class="stat-value"><span id="stat-active-rooms">631</span><span class="stat-unit"> /847</span></p><div class="stat-delta down" id="stat-occupancy">down 74.5% occupancy</div></div>
+        <div class="stat-card"><div class="stat-label">Wings Over Quota</div><p class="stat-value"><span id="stat-over-quota">2</span><span class="stat-unit"> /5</span></p><div class="stat-delta up" id="stat-nudges-sent">up Nudges sent: 3</div></div>
+      </div>
+      <div class="grid-2">
+        <article class="card overview-chart-card">
+          <div class="card-header">
+            <div><h3 class="card-title">Energy Forecast vs Actual</h3><div class="card-subtitle">AI time-series | all wings combined</div></div>
+            <div class="tabs"><div class="tab active">Today</div><div class="tab">Week</div><div class="tab">Month</div></div>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line id="chart-quota-line" class="chart-line quota" x1="0" y1="52" x2="100" y2="52" stroke="rgba(255,191,90,.72)" stroke-width="1.3" stroke-dasharray="2 2"></line>
+                <polyline id="chart-pred-path" class="chart-line pred" points="0,62 10,58 20,55 30,50 40,48 50,45 60,43 70,40 80,39 90,38 100,37" fill="none" stroke="#65a7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 2"></polyline>
+                <polyline id="chart-actual-path" class="chart-line actual" points="0,70 10,66 20,63 30,57 40,52 50,49 60,46 70,43 80,41 90,40 100,39" fill="none" stroke="#3be5ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></polyline>
+              </svg>
+            </div>
+            <div class="chart-legend">
+              <span><i class="legend-dot actual"></i>Actual</span>
+              <span><i class="legend-dot pred"></i>Predicted</span>
+              <span><i class="legend-dot quota"></i>Quota</span>
+            </div>
+          </div>
+        </article>
+        <article class="card nudges-priority-card">
+          <div class="card-header"><div><h3 class="card-title">AI Nudges</h3><div class="card-subtitle">Context-aware micro-interventions</div></div><div class="card-badge red"><span id="nudge-count">0</span> active</div></div>
+          <div class="card-body nudge-list" id="nudge-list"></div>
+        </article>
+      </div>
+      <div class="bottom-grid">
+        <article class="card economy-card"><div class="card-header"><div><h3 class="card-title">Harmony Economy</h3><div class="card-subtitle">Live token market | energy credits</div></div></div><div class="card-body" id="harmony-board"></div></article>
+        <article class="card forecast-card">
+          <div class="card-header"><div><h3 class="card-title">Digital Twin Forecast</h3><div class="card-subtitle">Next 24h | campus-level</div></div><div class="card-badge red pulsing" id="predict-badge">BREACH RISK HIGH</div></div>
+          <div class="predict-wrap">
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted)"><span>Energy Budget Progress</span><span id="predict-progress-label" style="color:var(--red)">143.2% of quota | +1,468 kWh risk</span></div>
+            <div class="predict-track"><div class="predict-quota-line" id="predict-quota-line" style="left:70%"><div class="predict-quota-label" id="predict-quota-label">Green Quota</div></div><div class="predict-fill over" id="predict-fill" style="width:100%"></div></div>
+            <div class="predict-labels"><span id="predict-min-label">0 kWh</span><span id="predict-mid-label">Green Quota: 3,400 kWh</span><span id="predict-max-label">Stress Cap: 5,258 kWh</span></div>
+            <div class="predict-meta">
+              <div class="predict-meta-item"><div class="predict-meta-val" style="color:var(--amber)" id="predict-used">4,868</div><div class="predict-meta-lbl">Projected Total</div></div>
+              <div class="predict-meta-item"><div class="predict-meta-val" style="color:var(--red)" id="predict-over">+1,468</div><div class="predict-meta-lbl">Risk Margin kWh</div></div>
+              <div class="predict-meta-item"><div class="predict-meta-val" style="color:var(--blue)" id="predict-temp">31.4 C</div><div class="predict-meta-lbl">Avg Ambient</div></div>
+            </div>
+            <div class="predict-hourly" id="predict-hourly"></div>
+          </div>
+        </article>
+        <article class="card heatmap-card">
+          <div class="card-body">
+            <div class="heatmap-widget">
+              <div class="heatmap-widget-head">
+                <div class="heatmap-head-icon" aria-hidden="true">HM</div>
+                <div class="heatmap-head-text">
+                  <div class="heatmap-title">Hourly Usage Heatmap</div>
+                  <div class="heatmap-sub">Observed + Projected Load Trace</div>
+                </div>
+                <div class="heatmap-meta">
+                  <div class="heatmap-active-wing" id="heatmap-active-wing">Campus</div>
+                  <div class="heatmap-now">Now <span id="heatmap-now-kwh">0</span> kWh</div>
+                  <div class="heatmap-peak" id="heatmap-peak">Peak <span id="heatmap-peak-time">00:00</span> (<span id="heatmap-peak-kwh">0</span> kWh)</div>
+                </div>
+              </div>
+              <div class="heatmap-wing-tabs" id="heatmap-wing-tabs"></div>
+              <div class="heatmap-table" id="heatmap"></div>
+              <div class="heatmap-time-axis">
+                <div class="heatmap-time-spacer"></div>
+                <div class="heatmap-time-labels">
+                  <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>23:00</span>
+                </div>
+              </div>
+              <div class="heatmap-scale">
+                <span class="heatmap-scale-label">Low</span>
+                <div class="heatmap-scale-grad"></div>
+                <span class="heatmap-scale-label">High</span>
+              </div>
+              <div class="heatmap-stats">
+                <div class="heatmap-stat">
+                  <div class="heatmap-stat-value" style="color:var(--cyan)" id="heatmap-stat-avg">0</div>
+                  <div class="heatmap-stat-label">Avg kWh/hr</div>
+                </div>
+                <div class="heatmap-stat">
+                  <div class="heatmap-stat-value" style="color:var(--amber)" id="heatmap-stat-peak">0</div>
+                  <div class="heatmap-stat-label">Peak Hour</div>
+                </div>
+                <div class="heatmap-stat">
+                  <div class="heatmap-stat-value" style="color:var(--green)" id="heatmap-stat-saved">0</div>
+                  <div class="heatmap-stat-label">kWh Saved</div>
+                </div>
+              </div>
+              <div class="heatmap-live">
+                <div class="heatmap-live-dot"></div>
+                <div class="heatmap-live-text">Live telemetry active</div>
+                <div class="heatmap-live-clock" id="heatmap-live-clock">--:--:--</div>
+              </div>
+            </div>
+            <div class="heatmap-tooltip" id="heatmap-tooltip">
+              <div class="heatmap-tooltip-wing" id="heatmap-tip-wing"></div>
+              <div><span class="heatmap-tooltip-val" id="heatmap-tip-val"></span> <span class="heatmap-tooltip-unit">kWh</span></div>
+              <div class="heatmap-tooltip-time" id="heatmap-tip-time"></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="app-page" data-page-content="student-app" id="student-panel">
+      <div class="page-head"><h1 class="page-title">Student Harmony App</h1><p class="page-sub">Personal aura + live quota + spend actions</p></div>
+      <article class="student-card">
+        <div class="aura-wrap"><div class="aura-orb" id="student-aura-orb"></div><div class="aura-label">Personal Carbon Aura</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)" id="student-user-label">Student | --</div></div>
+        <div class="student-kpi">
+          <div class="student-kpi-box"><div class="student-kpi-title">Live Quota</div><div class="student-kpi-value"><span id="student-quota-left">4.2</span><span id="student-quota-unit" style="font-size:12px;color:var(--muted)"> kWh remaining</span></div></div>
+          <div class="student-kpi-box"><div class="student-kpi-title">4-hour Prediction</div><div style="margin-top:6px;font-size:13px;line-height:1.45" id="student-prediction-4h">Waiting for edge inference...</div></div>
+        </div>
+        <div class="student-market"><h5>Marketplace | Spend $HAR</h5><div class="student-market-list" id="student-market-list"></div></div>
+      </article>
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">My Activity Log</h3>
+            <div class="card-subtitle">Today's usage breakdown</div>
+          </div>
+        </div>
+        <div class="card-body" id="student-activity-log"></div>
+      </article>
+    </section>
+    <section class="app-page" data-page-content="admin-command-center" id="admin-panel">
+      <div class="page-head"><h1 class="page-title">Admin Command Center</h1><p class="page-sub">Digital Twin node health + global nudge override</p></div>
+      <article class="admin-card">
+        <div class="admin-head"><h3 class="admin-title">Warden Command Console</h3><div style="font-family:var(--mono);font-size:11px;color:var(--muted)" id="admin-user-label">--</div></div>
+        <div class="admin-legend">
+          <span class="admin-legend-item"><span class="admin-legend-dot online"></span>Online</span>
+          <span class="admin-legend-item"><span class="admin-legend-dot warn"></span>Degraded</span>
+          <span class="admin-legend-item"><span class="admin-legend-dot offline"></span>Critical</span>
+        </div>
+        <div class="admin-heat" id="admin-heat"></div>
+        <div class="admin-logic" id="admin-logic">Awaiting node telemetry...</div>
+        <div class="global-row"><input class="access-input" id="global-nudge-message" placeholder="Push global nudge (event or heatwave override)"><button class="access-btn" id="global-nudge-btn">Push Global Nudge</button></div>
+      </article>
+    </section>
+    <section class="app-page" data-page-content="marketplace">
+      <div class="page-head"><h1 class="page-title">Harmony Marketplace</h1><p class="page-sub">Spend credits for utilities and priority slots</p></div>
+      <div class="page-grid">
+        <article class="card"><div class="card-header"><div><h3 class="card-title">Live Token Market</h3><div class="card-subtitle">Wing balances + utility redemption</div></div></div><div class="card-body" id="marketplace-board"></div></article>
+        <article class="card"><div class="card-header"><div><h3 class="card-title">Market Rules</h3><div class="card-subtitle">Circular resource economy</div></div></div><div class="card-body" style="display:grid;gap:10px"><div class="analytics-card"><p class="analytics-label">How it Works</p><p class="analytics-detail">Wings earn $HAR when they beat the AI prediction. Credits redeem for real hostel utilities - hot water slots, laundry priority, AC extensions.</p></div><div class="analytics-card"><p class="analytics-label">Earn Rate</p><p class="analytics-detail">+1 $HAR per kWh saved below quota. Bonus multiplier x2 during peak demand hours (18:00-22:00).</p></div><div class="analytics-card"><p class="analytics-label">Role Scope</p><p class="analytics-detail">Students spend for their own wing slot. Admins monitor, override nudges, and redistribute credits globally.</p></div></div></article>
+      </div>
+    </section>
+    <section class="app-page" data-page-content="analytics">
+      <div class="page-head"><h1 class="page-title">Predictive Analytics</h1><p class="page-sub">Forecast KPIs and intervention telemetry</p></div>
+      <div class="analytics-grid">
+        <article class="analytics-card"><p class="analytics-label">Budget Use</p><div class="analytics-value" id="analytics-budget-use" style="color:var(--red)">143.2%</div><p class="analytics-detail" id="analytics-budget-detail">Campus budget consumption vs green quota. Currently in breach zone.</p></article>
+        <article class="analytics-card"><p class="analytics-label">Projected Overrun</p><div class="analytics-value" id="analytics-overrun" style="color:var(--red)">+1,468 kWh</div><p class="analytics-detail">Expected overrun if no intervention is applied by day-end.</p></article>
+        <article class="analytics-card"><p class="analytics-label">Avg Ambient Temp</p><div class="analytics-value" id="analytics-temp" style="color:var(--blue)">31.4 C</div><p class="analytics-detail">High temperature driving +23% HVAC demand vs baseline.</p></article>
+        <article class="analytics-card"><p class="analytics-label">Active Nudges</p><div class="analytics-value" id="analytics-nudges">0</div><p class="analytics-detail">Current context-aware interventions in flight.</p></article>
+        <article class="analytics-card"><p class="analytics-label">Top Performing Wing</p><div class="analytics-value" id="analytics-top-wing" style="color:var(--green)">Alpha</div><p class="analytics-detail">Best token-efficiency and quota adherence this session.</p></article>
+        <article class="analytics-card"><p class="analytics-label">Global Nudge Status</p><div style="margin-top:8px;font-size:13px;color:var(--muted)" id="analytics-global-nudge">No active global nudge.</div></article>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="access-portal" id="access-portal">
+  <div class="access-card glass-layer">
+    <div class="access-head"><div><h2 class="access-title">Multi-tier Access Portal</h2><div class="access-sub">RBAC | edge auth checkpoint | smart calibration</div></div><div class="access-role-toggle"><button class="access-role-btn active" data-role-tab="student">Student Harmony</button><button class="access-role-btn" data-role-tab="admin">Warden/Admin</button></div></div>
+    <div class="access-grid">
+      <div class="access-panel" id="student-access-pane">
+        <h4>Student Entry</h4><div class="access-note">Use Student ID SSO or biometric simulation.</div>
+        <div class="access-row"><select class="access-select" id="student-id-select"><option value="STU-ALPHA-2026">STU-ALPHA-2026 | Alpha Wing</option><option value="STU-BETA-2026">STU-BETA-2026 | Beta Wing</option><option value="STU-GAMMA-2026">STU-GAMMA-2026 | Gamma Wing</option><option value="STU-DELTA-2026">STU-DELTA-2026 | Delta Wing</option><option value="STU-EPSILON-2026">STU-EPSILON-2026 | Epsilon Wing</option></select></div>
+        <div class="access-row"><button class="access-btn secondary" id="student-biometric-btn">Biometric Login</button><button class="access-btn" id="student-sso-btn">SSO Login</button></div>
+      </div>
+      <div class="access-panel" id="admin-access-pane" style="display:none">
+        <h4>Admin Entry</h4><div class="access-note">Operator credentials unlock global override controls.</div>
+        <div class="access-row"><input class="access-input" id="admin-username" placeholder="Username (admin or operator)"></div>
+        <div class="access-row"><input class="access-input" id="admin-password" type="password" placeholder="Password"></div>
+        <div class="access-row"><button class="access-btn" id="admin-login-btn">Login to Command Center</button></div>
+      </div>
+    </div>
+    <div class="portal-status" id="portal-status">Login is ready. Select Student or Admin to continue.</div>
+  </div>
+</div>
+<div class="onboard-modal" id="onboard-modal">
+  <div class="onboard-card glass-layer">
+    <h3 class="onboard-title">Smart Onboarding</h3>
+    <div class="onboard-sub">Lifestyle calibration | first login only</div>
+    <div class="onboard-q"><label>1. Do you study better in the common hall or your room?</label><select class="access-select" id="onboard-study"><option value="common_hall">Common Hall</option><option value="room">Room</option></select></div>
+    <div class="onboard-q"><label>2. Which laundry day is your priority?</label><select class="access-select" id="onboard-laundry"><option value="monday">Monday</option><option value="wednesday">Wednesday</option><option value="friday">Friday</option><option value="sunday">Sunday</option></select></div>
+    <div class="onboard-q"><label>3. Connect your smart devices?</label><select class="access-select" id="onboard-devices"><option value="yes">Yes | Sync devices</option><option value="no">No | Keep manual tracking</option></select></div>
+    <div class="access-row"><button class="access-btn" id="onboard-save-btn">Save Calibration</button></div>
+  </div>
+</div>
+<div class="ghost-mascot glass-layer" id="ai-ghost"><p class="ghost-head">AI GHOST</p><p class="ghost-msg" id="ai-ghost-msg">Welcome back.</p></div>
+<div class="nudge-toast" id="toast" style="display:none">
+  <button class="close-toast" aria-label="Close notification" onclick="if(window.ecoApexDismissToast){window.ecoApexDismissToast();}else{document.getElementById('toast').style.display='none';}">Close</button>
+  <div class="toast-head">EcoApex Notification</div>
+  <p class="toast-msg">Epsilon Wing is currently using <strong style="color:var(--red)">22% more power than average</strong>. If you dim common lights by 20%, the wing can save <strong style="color:var(--green)">8.4 kg CO2</strong> and earn +12 $HAR.</p>
+  <div class="toast-actions"><button class="toast-btn primary">Apply Suggestion</button><button class="toast-btn secondary" onclick="if(window.ecoApexDismissToast){window.ecoApexDismissToast();}else{document.getElementById('toast').style.display='none';}">Dismiss</button></div>
+</div>
+<script>
+  function showToast() {
+    const toast = document.getElementById("toast");
+    if (toast) toast.style.display = "block";
+  }
+</script>
+<script type="module" src="./src/js/main.js"></script>
+</body>
+</html>
