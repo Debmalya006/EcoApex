@@ -65,7 +65,7 @@ EcoApex is a real-time hostel energy management platform that uses a digital twi
 - **Cooldown system** — prevents nudge fatigue with configurable cooldown periods
 - **Coverage rotation** — ensures all wings get nudge attention fairly
 
-### 💰 Harmony Token Economy ($HARMONY)
+### 💰 Harmony Token Economy ($HAR)
 - Wings **earn tokens** by accepting energy nudges and beating quota
 - Students **spend tokens** on real hostel utilities:
   - 🧺 Priority Laundry — 40 tokens
