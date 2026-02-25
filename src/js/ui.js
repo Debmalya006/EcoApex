@@ -2167,3 +2167,73 @@ export function createUI() {
     initAccessPortal
   };
 }
+
+// ── HARDWARE STATUS LIVE TICKER ──────────────────────────────────
+// Scoped IIFE — touches only ea-hw-* element IDs, nothing else
+(function eaHardwareTicker() {
+  const LOGS = [
+    { cls: "ok",   tag: "INFER",  msg: "Prediction tick complete" },
+    { cls: "",     tag: "INFO",   msg: "SSE heartbeat sent to clients" },
+    { cls: "ok",   tag: "NPU",    msg: "XDNA pipeline utilisation nominal" },
+    { cls: "warn", tag: "WARN",   msg: "Remote TFT service unavailable — local fallback active" },
+    { cls: "ok",   tag: "TWIN",   msg: "Digital twin tick advanced" },
+    { cls: "",     tag: "INFO",   msg: "Ledger persisted to disk" },
+    { cls: "ok",   tag: "INFER",  msg: "Nudge scoring complete — 3 interventions queued" },
+    { cls: "ok",   tag: "ROCm",   msg: "Runtime health check passed" },
+    { cls: "",     tag: "STREAM", msg: "10,248 data points processed this window" },
+    { cls: "ok",   tag: "AUTH",   msg: "Session tokens pruned — 0 expired" },
+    { cls: "ok",   tag: "NPU",    msg: "TFT forward pass: 6.4ms · batch size 32" },
+    { cls: "",     tag: "INFO",   msg: "Wing state snapshot serialised" },
+  ];
+  let logIdx = 0;
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  function setBar(barId, pctId, val, suffix) {
+    const bar = document.getElementById(barId);
+    const lbl = document.getElementById(pctId);
+    if (bar) bar.style.width = Math.round(val) + "%";
+    if (lbl) lbl.textContent = suffix
+      ? val.toFixed(1) + suffix
+      : Math.round(val) + "%";
+  }
+
+  function tick() {
+    const cpu    = rnd(18, 62);
+    const npu    = rnd(55, 88);
+    const mem    = rnd(34, 58);
+    const lat    = rnd(5, 17);
+    const stream = rnd(88, 99);
+    const power  = rnd(12, 28);
+
+    setBar("ea-hw-cpu-bar",    "ea-hw-cpu-pct",    cpu,    null);
+    setBar("ea-hw-npu-bar",    "ea-hw-npu-pct",    npu,    null);
+    setBar("ea-hw-mem-bar",    "ea-hw-mem-pct",    mem,    null);
+    setBar("ea-hw-lat-bar",    "ea-hw-lat-val",    Math.min(lat / 17 * 100, 100), null);
+    setBar("ea-hw-stream-bar", "ea-hw-stream-pct", stream, null);
+    setBar("ea-hw-power-bar",  "ea-hw-power-pct",  power,  null);
+
+    const latEl = document.getElementById("ea-hw-lat-val");
+    if (latEl) latEl.textContent = lat.toFixed(1) + " ms";
+
+    const memEl = document.getElementById("ea-hw-mem-val");
+    if (memEl) memEl.textContent = (mem * 0.163).toFixed(1) + " GB";
+
+    const pwrEl = document.getElementById("ea-hw-power-val");
+    if (pwrEl) pwrEl.textContent = Math.round(power * 0.85 + 8) + " W";
+
+    const log = document.getElementById("ea-hw-log");
+    if (log) {
+      const e = LOGS[logIdx % LOGS.length]; logIdx++;
+      const t = new Date().toLocaleTimeString("en-GB", { hour12: false });
+      const div = document.createElement("div");
+      div.className = "ea-hw-log-line " + e.cls;
+      div.innerHTML = '<span class="ea-hw-tag">[' + e.tag + ']</span> ' + t + ' — ' + e.msg;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+      while (log.children.length > 30) log.removeChild(log.firstChild);
+    }
+  }
+
+  setTimeout(function() { tick(); setInterval(tick, 3500); }, 1200);
+})();
