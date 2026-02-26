@@ -352,7 +352,9 @@ Student accepts nudge → Tokens minted → Ledger updated
 
 ## 👥 Team
 
-**Debmalya** — [github.com/Debmalya006](https://github.com/Debmalya006)
+**Debmalya Sadhu** — Team Leader · [github.com/Debmalya006](https://github.com/Debmalya006)
+- **Aayush Srivastaw** — Team Member
+- **Ayushman Kashyapi** — Team Member
 
 Built for the AMD Hackathon — Edge AI on AMD Ryzen™ AI hardware.
 
