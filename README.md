@@ -68,9 +68,10 @@ EcoApex is a real-time hostel energy management platform that uses a digital twi
 ### 💰 Harmony Token Economy ($HAR)
 - Wings **earn tokens** by accepting energy nudges and beating quota
 - Students **spend tokens** on real hostel utilities:
-  - 🧺 Priority Laundry — 40 tokens
-  - ❄️ Extended AC +1hr — 65 tokens
-  - 🍽️ Cafeteria Voucher — 30 tokens
+  - Late Night Library Pass - 15 tokens 
+  - Priority Laundry — 10 tokens
+  - Hot Water Priority — 5 tokens
+  - Gym Peak Hour Access — 12 tokens
 - Full **audit ledger** — every mint, redeem, and adjust transaction is recorded
 
 ### 🔐 Role-Based Access Control (RBAC)
